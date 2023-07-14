@@ -7,10 +7,7 @@ const likes_on_comments = async (req: any, res: any) => {
         await Comments.findAll()
             .then((result: any) => {
                 result.forEach((record: any) => {
-                    // console.log(`Record ID: ${record.id}`);
-                    // console.log(`Record Value: ${record.contents}`);
                     comment_id = record.id;
-                    //console.log(record.id);
                     const printlike = async (comment_id: any) => {
                         const likedata = await Likes.findOne({ where: { comment_id: comment_id } });
                         if (likedata == null) {
