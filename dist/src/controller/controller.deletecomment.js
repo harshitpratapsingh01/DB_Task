@@ -9,23 +9,27 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.delete_comment = void 0;
+exports.Delete = void 0;
 const schema_1 = require("../models/schema");
-const delete_comment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const { id } = req.body;
-        const data = yield schema_1.Comments.findByPk(id);
-        if (!data) {
-            res.status(404).json({ status: "Not Found" });
-        }
-        else {
-            yield data.destroy();
-            res.status(200).json({ status: "comment deleted successfully" });
-        }
+class Delete {
+    static delete_comment(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { id } = req.body;
+                const data = yield schema_1.Comments.findByPk(id);
+                if (!data) {
+                    res.status(404).json({ status: "Not Found" });
+                }
+                else {
+                    yield data.destroy();
+                    res.status(200).json({ status: "comment deleted successfully" });
+                }
+            }
+            catch (err) {
+                res.status(502).json({ status: "Bad Gateway" });
+            }
+        });
     }
-    catch (err) {
-        res.status(502).json({ status: "Bad Gateway" });
-    }
-});
-exports.delete_comment = delete_comment;
+}
+exports.Delete = Delete;
 //# sourceMappingURL=controller.deletecomment.js.map

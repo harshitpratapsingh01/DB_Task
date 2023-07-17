@@ -9,17 +9,23 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Post_photo = void 0;
+exports.Post = void 0;
 const schema_1 = require("../models/schema");
-const Post_photo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const details = req.body;
-    try {
-        yield schema_1.Photos.create(details);
-        res.status(200).json({ status: "Post created Successfully" });
+const validate_photo_data_1 = require("../middleware/validate_photo_data");
+class Post {
+    static Post_photo(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const details = req.body;
+            try {
+                yield validate_photo_data_1.ValidatePost.post_validation.validateAsync(details);
+                yield schema_1.Photos.create(details);
+                res.status(200).json({ status: "Post created Successfully" });
+            }
+            catch (err) {
+                res.status(404).json({ status: "Enter Valid Details" });
+            }
+        });
     }
-    catch (err) {
-        res.status(500).json({ status: "Server Error" });
-    }
-});
-exports.Post_photo = Post_photo;
+}
+exports.Post = Post;
 //# sourceMappingURL=controller.createpost.js.map

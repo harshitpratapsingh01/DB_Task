@@ -9,23 +9,29 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.loginUser = void 0;
+exports.LoginUser = void 0;
 const schema_1 = require("../models/schema");
-const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const details = req.body;
-    try {
-        const isUser = yield schema_1.User.findOne({ where: { username: details.username } });
-        if (isUser != null) {
-            console.log(isUser);
-            res.status(200).json({ status: "loggedIn Successfully" });
-        }
-        else {
-            res.status(404).json({ status: "not found" });
-        }
+const validate_user_1 = require("../middleware/validate_user");
+class LoginUser {
+    static login(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const details = req.body;
+            try {
+                yield validate_user_1.Validate.validateUser.validateAsync(details);
+                const isUser = yield schema_1.User.findOne({ where: { username: details.username } });
+                if (isUser != null) {
+                    console.log(isUser);
+                    res.status(200).json({ status: "loggedIn Successfully" });
+                }
+                else {
+                    res.status(404).json({ status: "not found" });
+                }
+            }
+            catch (err) {
+                res.status(500).json({ status: "Server Error" });
+            }
+        });
     }
-    catch (err) {
-        res.status(500).json({ status: "Server Error" });
-    }
-});
-exports.loginUser = loginUser;
+}
+exports.LoginUser = LoginUser;
 //# sourceMappingURL=controller.login.js.map

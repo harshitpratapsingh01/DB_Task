@@ -9,27 +9,42 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.recent_comments = void 0;
+exports.RecentComments = void 0;
 const schema_1 = require("../models/schema");
-const recent_comments = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        let photo_id = 0;
-        schema_1.Photos.findAll({
-            order: [['id', 'DESC']]
-        }).then((result) => {
-            for (let i = 0; i < 3; i++) {
-                console.log(`USER ID: ${result[i].user_id}`);
-                console.log(`URL: ${result[i].url}`);
+class RecentComments {
+    static recentCommentsOnPhoto(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const details = req.body;
+                const findID = yield schema_1.Comments.findOne({ where: { photo_id: details.photo_id } });
+                // console.log(findID);
+                if (findID != null) {
+                    schema_1.Comments.findAll({
+                        where: { photo_id: details.photo_id },
+                        order: [['id', 'DESC']]
+                    })
+                        .then((result) => {
+                        const recentComments = [];
+                        for (let i = 0; i < 3; i++) {
+                            recentComments.push(result[i].contents);
+                        }
+                        console.log(recentComments);
+                        // res.json({recentComments});
+                    })
+                        .catch((error) => {
+                        console.log(error);
+                    });
+                    res.status(200).json({ status: "success" });
+                }
+                else {
+                    res.status(404).json({ status: "Photo not found" });
+                }
             }
-        })
-            .catch((error) => {
-            // Handle error
+            catch (err) {
+                res.status(500).json({ status: "Server Error" });
+            }
         });
-        res.status(200).json({ status: "success" });
     }
-    catch (err) {
-        res.status(500).json({ status: "Server Error" });
-    }
-});
-exports.recent_comments = recent_comments;
+}
+exports.RecentComments = RecentComments;
 //# sourceMappingURL=controller.recentThreeComments.js.map

@@ -34,7 +34,7 @@ const app = (0, express_1.default)();
 dotenv.config();
 app.use(express_1.default.json());
 const port = process.env.PORT;
-(0, connection_1.dbconnection)();
+connection_1.Connection.dbconnection();
 app.use('/', routers_1.default);
 app.listen(port, () => {
     console.log(`listning at http://locahost:${port}`);

@@ -1,24 +1,38 @@
-import { Photos } from "../models/schema";
+import { Comments } from "../models/schema";
 
-const recent_comments = async(req:any,res:any) => {
-    try{
-        let photo_id: Number = 0;
-        Photos.findAll({
-            order: [['id', 'DESC']]
-          }).then((result:any) => {
-              for (let i = 0; i < 3; i++) {
-                console.log(`USER ID: ${result[i].user_id}`);
-                console.log(`URL: ${result[i].url}`);
-              }
-            })
-            .catch((error:any) => {
-                console.log(error);
-            });
-        res.status(200).json({status : "success"});
-    }
-    catch(err){
-        res.status(500).json({status: "Server Error"});
+
+class RecentComments {
+    static async recentCommentsOnPhoto(req: any, res: any) {
+        try {
+            const details = req.body;
+            const findID = await Comments.findOne({ where: { photo_id: details.photo_id } });
+            // console.log(findID);
+            if (findID != null) {
+                Comments.findAll({
+                    where: { photo_id: details.photo_id },
+                    order: [['id', 'DESC']]
+                })
+                    .then((result: any) => {
+                        const recentComments = [];
+                        for (let i = 0; i < 3; i++) {
+                            recentComments.push(result[i].contents);
+                        }
+                        console.log(recentComments);
+                        // res.json({recentComments});
+                    })
+                    .catch((error: any) => {
+                        console.log(error);
+                    });
+                res.status(200).json({ status: "success" });
+            }
+            else {
+                res.status(404).json({ status: "Photo not found" });
+            }
+        }
+        catch (err) {
+            res.status(500).json({ status: "Server Error" });
+        }
     }
 }
 
-export {recent_comments};
+export { RecentComments };

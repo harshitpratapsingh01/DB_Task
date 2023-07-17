@@ -9,30 +9,40 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createComment = void 0;
+exports.Comment = void 0;
 const schema_1 = require("../models/schema");
-const createComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const details = req.body;
-    console.log(details);
-    const id = req.body.comment_id;
-    const likes = req.params.like;
-    try {
-        if (likes != null) {
-            const update = yield schema_1.Likes.increment('totallikes', { where: { comment_id: id } });
-            console.log(update);
-            res.status(200).json({ status: "comment liked successfully" });
-        }
-        // else if(likes == false){
-        //     res.status(200).json({status:"comment not liked"});
-        // }
-        else {
-            yield schema_1.Comments.create(details);
-            res.status(200).json({ status: "comment created successfully" });
-        }
+const validate_user_comment_data_1 = require("../middleware/validate_user_comment_data");
+class Comment {
+    static createComment(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const details = req.body;
+            console.log(details);
+            const id = req.body.comment_id;
+            const likes = req.params.like;
+            try {
+                if (likes != null) {
+                    const update = yield schema_1.Likes.increment('totallikes', { where: { comment_id: id } });
+                    // console.log(update);
+                    res.status(200).json({ status: "comment liked successfully" });
+                }
+                else {
+                    yield validate_user_comment_data_1.CommentValidate.validate_comment.validateAsync(details);
+                    // const findUser = await Photos.findOne({where:{user_id : details.user_id}});
+                    const findPost = yield schema_1.Comments.findOne({ where: { photo_id: details.photo_id } });
+                    if (findPost != null) {
+                        yield schema_1.Comments.create(details);
+                        res.status(200).json({ status: "comment created successfully" });
+                    }
+                    else {
+                        res.status(404).json({ status: "Photo Not Found" });
+                    }
+                }
+            }
+            catch (err) {
+                res.status(500).json({ status: "Server Error" });
+            }
+        });
     }
-    catch (err) {
-        res.status(500).json({ status: "Server Error" });
-    }
-});
-exports.createComment = createComment;
+}
+exports.Comment = Comment;
 //# sourceMappingURL=controller.comment.js.map

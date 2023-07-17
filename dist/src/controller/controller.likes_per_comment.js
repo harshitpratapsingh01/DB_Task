@@ -9,38 +9,39 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.likes_on_comments = void 0;
+exports.Like = void 0;
 const schema_1 = require("../models/schema");
-const likes_on_comments = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        let comment_id = 0;
-        yield schema_1.Comments.findAll()
-            .then((result) => {
-            result.forEach((record) => {
-                // console.log(`Record ID: ${record.id}`);
-                // console.log(`Record Value: ${record.contents}`);
-                comment_id = record.id;
-                //console.log(record.id);
-                const printlike = (comment_id) => __awaiter(void 0, void 0, void 0, function* () {
-                    const likedata = yield schema_1.Likes.findOne({ where: { comment_id: comment_id } });
-                    if (likedata == null) {
-                        console.log(`Likes:=${0}`);
-                    }
-                    else {
-                        console.log(`Likes:=${likedata.dataValues.totallikes}`);
-                    }
+class Like {
+    static likes_on_comments(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                let comment_id = 0;
+                yield schema_1.Comments.findAll()
+                    .then((result) => {
+                    result.forEach((record) => {
+                        comment_id = record.id;
+                        const printlike = (comment_id) => __awaiter(this, void 0, void 0, function* () {
+                            const likedata = yield schema_1.Likes.findOne({ where: { comment_id: comment_id } });
+                            if (likedata == null) {
+                                console.log(`Likes:=${0}`);
+                            }
+                            else {
+                                console.log(`Likes:=${likedata.dataValues.totallikes}`);
+                            }
+                        });
+                        printlike(comment_id);
+                    });
+                })
+                    .catch((error) => {
+                    console.log(error);
                 });
-                printlike(comment_id);
-            });
-        })
-            .catch((error) => {
-            // Handle error
+                res.status(200).json({ status: "success" });
+            }
+            catch (err) {
+                res.status(400).json({ status: "Bad Request" });
+            }
         });
-        res.status(200).json({ status: "success" });
     }
-    catch (err) {
-        res.status(400).json({ status: "Bad Request" });
-    }
-});
-exports.likes_on_comments = likes_on_comments;
+}
+exports.Like = Like;
 //# sourceMappingURL=controller.likes_per_comment.js.map
